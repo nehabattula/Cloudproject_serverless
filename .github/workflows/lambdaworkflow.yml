@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    name: buildlambda1
+    name: buildlambda
     runs-on: ubuntu-latest
 
     strategy:
