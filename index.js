@@ -4,7 +4,7 @@
 
 console.log('In Lambda function');
 export function handler(event,context,callback){
-  console.log('Message from SNS');
+  console.log('Message from SNS....');
   var message = event.Records[0].Sns.Message;
   callback(null,"Success");
 }
