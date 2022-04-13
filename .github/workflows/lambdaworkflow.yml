@@ -35,8 +35,7 @@ jobs:
           aws-region: us-east-1
       - name: Copying artifact to S3
         run: |
-            rm -rf aws
-            aws deploy push --application-name csye6225lambdaapp --description "Copying the latest revision for csye6225lambdaapp-${{ github.sha }}" --ignore-hidden-files --s3-location s3://mylambdabucket96/csye6225lambdaapp-${{ github.sha}}.zip  --source .
+           aws s3 cp ./index.zip s3://mylambdabucket96/
       - name: Lambda Update
         run: |
-              aws lambda update-function-code --function-name lambdawebapp --zip-file fileb://index.zip
+          aws lambda update-function-code --function-name MailingServiceFunction --s3-bucket mylambdabucket96 --s3-key index.zip
