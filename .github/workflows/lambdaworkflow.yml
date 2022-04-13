@@ -9,34 +9,34 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+jobs:
+  build:
+    name: buildlambda
+    runs-on: ubuntu-latest
 
-  job:
-    build:
-      name: buildlambda
-      runs-on: ubuntu-latest
-      strategy:
-        matrix:
-          node-version [12.x]
-      steps:
-        - uses: actions/checkout@v2
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+      - uses: actions/checkout@v2
 
-        - name: Creating a zip file for lambda
-          run: |
-              pwd
-              ls -al
-              zip -r index.zip ./
-              echo "after zipping index folder"
-              ls -al
-        - name: Configuring AWS Credentials
-          uses: aws-actions/configure-aws-credentials@v1
-          with:
+      - name: Creating a zip file for lambda
+        run: |
+             pwd
+             ls -al
+             zip -r index.zip ./
+             echo "after zipping index folder"
+             ls -al
+      - name: Configuring AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
           aws-access-key-id: ${{ secrets.GHUSER_ACCESSKEY }}
           aws-secret-access-key: ${{ secrets.GHUSER_SECRETKEY }}
           aws-region: us-east-1
       - name: Copying artifact to S3
-          run: |
-          rm -rf aws
-          aws deploy push --application-name csye6225lambdaapp --description "Copying the latest revision for csye6225lambdaapp-${{ github.sha }}" --ignore-hidden-files --s3-location s3://mylambdabucket96/csye6225lambdaapp-${{ github.sha}}.zip  --source .
+        run: |
+            rm -rf aws
+            aws deploy push --application-name csye6225lambdaapp --description "Copying the latest revision for csye6225lambdaapp-${{ github.sha }}" --ignore-hidden-files --s3-location s3://mylambdabucket96/csye6225lambdaapp-${{ github.sha}}.zip  --source .
       - name: Lambda Update
         run: |
               aws lambda update-function-code --function-name lambdawebapp --zip-file fileb://index.zip
