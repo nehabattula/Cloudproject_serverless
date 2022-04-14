@@ -7,7 +7,7 @@ console.log('In Lambda function');
 
 exports.handler= function handler(event,context,callback){
   
-    console.log('Message from SNS....');
+    console.log('Message from SNS testing....');
 
     var msg = event.Records[0].Sns.Message;
 
@@ -81,8 +81,8 @@ exports.handler= function handler(event,context,callback){
                 if(data.Item==undefined){
                 dynamodb.putItem(paramsDB,(error,data=>{
                     if(!error){
-                        var sendpromise = sendingEmail.sendEmail(emailParams).promise();
-                        sendpromise
+                        var emailCapture = sendingEmail.sendEmail(emailParams).promise();
+                        emailCapture
                         .then(function(data){
                             console.log("Email sent");
                         })
@@ -91,7 +91,7 @@ exports.handler= function handler(event,context,callback){
                         });
                     }
                     else{
-                        console.log("error error!!");
+                        console.log("testing here, error error!!");
                     }
                 }));
             }
