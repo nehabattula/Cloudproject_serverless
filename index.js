@@ -14,7 +14,7 @@ exports.handler= function handler(event,context,callback){
     var token = event.Records[0].Sns.Subject
 
     var dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10', region: "us-east-1"});
-
+    var sendingEmail = new AWS.SES({ apiVersion: '2010-12-01', region: "us-east-1" });
     AWS.config.update({
         secretaccesskey : process.env.AWS_SECRET_ACCESS_KEY,
         accesskey :process.env.AWS_ACCESS_KEY_ID,
@@ -33,53 +33,60 @@ exports.handler= function handler(event,context,callback){
 
     console.log("checking from username dynamo DB",tokenparams);
 
-    var usernameExists = await dynamodb.getItem(tokenparams).promise();
 
-     // check if the user exists from the dynamo DB
-    if(usernameExists.Item==undefined||usernameExists.Item==""){
+   // declaring the email parameters    
 
-            console.log("User doesn't exist, sending email");
+    var emailParams ={
 
-            //declaring the email parameters    
-
-            var emailParams ={
-
-             Destination:{
-                 ToAddresses:[
-                     msg
-                 ]},
+        Destination:{
+                ToAddresses:[
+                        msg
+                ]},
                  Message:{
-                     Body: {
-                         Html: {
-                            Charset: "UTF-8",
-                            Data: "Verifying user link. Find the token as follows.."+token
-                         }
-                     },
-                     Subject: {
-                        Charset: "UTF-8",
-                        Data: 'Link to verify email address'
-                     }
-                 },
-                 Source: "csye6225neha@prod.nehabattula.me"
-            };
+                        Body: {
+                            Html: {
+                               Charset: "UTF-8",
+                               Data: "Verifying user link. Find the token as follows.."+token
+                            }
+                        },
+                        Subject: {
+                           Charset: "UTF-8",
+                           Data: 'Link to verify email address'
+                        }
+        },
+        Source: "csye6225neha@prod.nehabattula.me"
+    };
 
-           //sending email 
+   //Adding to UsernameDynamoDB
 
-            var sendingEmail = new AWS.SES({ apiVersion: '2010-12-01', region: "us-east-1" });
-            await sendingEmail.sendEmail(emailParams).promise();
-        
-           //Adding to UsernameDynamoDB
-
-            var paramsDB = {
-                Item: {
+    var paramsDB = {
+             Item: {
                 'Username': {S: msg}
-                },
-                TableName: 'myDynamoUsernameTable'
+            },
+        TableName: 'myDynamoUsernameTable'
 
+     }
+
+
+    dynamodb.getItem(tokenparams,(error,data)=>{
+        if(!error){
+
+            if(usernameExists.Item==undefined||usernameExists.Item==""){
+                dynamodb.putItem(paramsDB,(error,data=>{
+                    if(!error){
+                        var sendpromise = sendingEmail.sendEmail(emailParams);
+                        sendpromise
+                        .then(function(data){
+                            console.log("Email sent");
+                        })
+                        .catch(function(error){
+                            console("Error ocurred!!")
+                        });
+                    }
+                }));
             }
+        }
 
-            await dynamodb.putItem(paramsDB).promise();
-
-    } //if username doesn't exist
-
+    });
+   
 }
