@@ -1,9 +1,11 @@
-import AWS from 'aws-sdk';
+
+const AWS = require('aws-sdk');
+
 const region= 'us-east-1'
 
 console.log('In Lambda function');
 
-export function handler(event,context,callback){
+exports.handler= function handler(event,context,callback){
   
     console.log('Message from SNS....');
 
