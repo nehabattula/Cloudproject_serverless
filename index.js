@@ -21,7 +21,7 @@ exports.handler= function handler(event,context,callback){
         region : "us-east-1"
     })
 
-    //to check if the username exists in the username dynamo DB. If it does not exist, send the email
+    //To check if Email ID exists   
 
     var tokenparams ={
             Key: {
@@ -34,7 +34,7 @@ exports.handler= function handler(event,context,callback){
     console.log("checking from username dynamo DB",tokenparams);
 
 
-   // declaring the email parameters    
+   // declaring the email parameters
 
     var emailParams ={
 
@@ -46,7 +46,7 @@ exports.handler= function handler(event,context,callback){
                         Body: {
                             Html: {
                                Charset: "UTF-8",
-                               Data: "Verifying user link. Find the token as follows.."+token
+                               Data: "Hello! Click on this link to verify "+"http://prod.nehabattula.me/v1/verifyEmail?email="+msg+"&token="+token
                             }
                         },
                         Subject: {
