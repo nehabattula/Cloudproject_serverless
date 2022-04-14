@@ -25,10 +25,10 @@ exports.handler= function handler(event,context,callback){
 
     var tokenparams ={
             Key: {
-                'Username': {S: msg}
+                'EmailID': {S: msg}
             },
             TableName: 'myDynamoUsernameTable',
-            ProjectionExpression : 'Username'
+            ProjectionExpression : 'EmailID'
     };
 
     console.log("checking from username dynamo DB",tokenparams);
@@ -61,7 +61,7 @@ exports.handler= function handler(event,context,callback){
 
     var paramsDB = {
              Item: {
-                'Username': {S: msg}
+                'EmailID': {S: msg}
             },
         TableName: 'myDynamoUsernameTable'
 
@@ -69,12 +69,19 @@ exports.handler= function handler(event,context,callback){
 
 
     dynamodb.getItem(tokenparams,(error,data)=>{
-        if(!error){
-
-            if(usernameExists.Item==undefined||usernameExists.Item==""){
+        console.log("Test here!!");
+        if(error)
+        {
+            console.log("Right heree!!!1");
+            console.log(error);
+        }
+        else{
+            console.log("Correct!!")
+            console.log(data);
+                if(data.Item==undefined){
                 dynamodb.putItem(paramsDB,(error,data=>{
                     if(!error){
-                        var sendpromise = sendingEmail.sendEmail(emailParams);
+                        var sendpromise = sendingEmail.sendEmail(emailParams).promise();
                         sendpromise
                         .then(function(data){
                             console.log("Email sent");
@@ -82,6 +89,9 @@ exports.handler= function handler(event,context,callback){
                         .catch(function(error){
                             console("Error ocurred!!")
                         });
+                    }
+                    else{
+                        console.log("error error!!");
                     }
                 }));
             }
