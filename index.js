@@ -46,7 +46,7 @@ exports.handler= function handler(event,context,callback){
                         Body: {
                             Html: {
                                Charset: "UTF-8",
-                               Data: "Hello! Click on this link to verify "+"http://prod.nehabattula.me/v1/verifyEmail?email="+msg+"&token="+token
+                               Data: "Hello! Click on this link to verify "+"https://prod.nehabattula.me/v1/verifyEmail?email="+msg+"&token="+token
                             }
                         },
                         Subject: {
